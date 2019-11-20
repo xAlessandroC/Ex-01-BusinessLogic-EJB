@@ -7,9 +7,10 @@ plugins {
 
     id 'war'
     id 'ear'
+	id 'eclipse'
 }
 
-def wildfly_home="/home/nghiselli/Projects/DistributedSystemsM/JBoss/wildfly-17.0.1.Final"
+def wildfly_home=System.env.WILDFLY_HOME
 
 repositories {
     maven { url "https://repository.jboss.org/nexus/content/groups/public/" }

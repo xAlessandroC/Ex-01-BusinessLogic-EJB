@@ -1,0 +1,16 @@
+language: java
+jdk:
+    - openjdk8
+os:
+    - linux
+sudo: required
+install:
+    - WILDFLY_VERSION=17.0.1.Final
+    - wget https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz -P /tmp
+    - sudo tar xf /tmp/wildfly-$WILDFLY_VERSION.tar.gz -C /opt/
+    - sudo ln -s /opt/wildfly-$WILDFLY_VERSION /opt/wildfly
+    - export WILDFLY_HOME=/opt/wildfly-$WILDFLY_VERSION
+    - gradle wrapper
+
+script:
+    - sudo ./gradlew build
