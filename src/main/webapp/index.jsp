@@ -4,6 +4,7 @@
 
 
 <%!
+	String note="";
 	String printTableRow(Product product, String url) {
 		StringBuffer html = new StringBuffer();
 		html
@@ -46,8 +47,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<meta name="Author" content="you">
 
-		<link rel="StyleSheet" href="styles/default.css" type="text/css" media="all" />
-	
+		<link rel="StyleSheet" href="<%=request.getContextPath()%>/styles/default.css" type="text/css" media="all" />
+		<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/utility.js"></script>
 	</head>
 	
 	<body>
@@ -61,18 +62,33 @@
 		ProductDAO productDAO = daoFactory.getProductDAO();
 		ProducerDAO producerDAO = daoFactory.getProducerDAO();
 
+		System.out.println( "###DEBUG###" );
+		System.out.println( daoFactory );
+		System.out.println( customerDAO );
+		System.out.println( purchaseDAO );
+		System.out.println( productDAO );
+		System.out.println( producerDAO );
+		
 		String operation = request.getParameter("operation");
 		if ( operation != null && operation.equals("insertCustomer") ) {
 			Customer customer = new Customer();
 			customer.setName( request.getParameter("name") );
-			int id = customerDAO.insertCustomer( customer );
-			out.println("<!-- inserted customer '" + customer.getName() + "', with id = '" + id + "' -->");
+			try{
+				int id = customerDAO.insertCustomer( customer );
+				note="Inserimento customer riuscito!";
+			}catch(Exception e){
+				note="Errore inserimento customer";
+			}
 		}
 		else if ( operation != null && operation.equals("insertProducer") ) {
 			Producer producer = new Producer();
 			producer.setName( request.getParameter("name") );
-			int id = producerDAO.insertProducer( producer );
-			out.println("<!-- inserted producer '" + producer.getName() + "', with id = '" + id + "' -->");
+			try{
+				int id = producerDAO.insertProducer( producer );
+				note="Inserimento producer riuscito!";
+			}catch(Exception e){
+				note="Errore inserimento producer";
+			}
 		}
 		else if ( operation != null && operation.equals("insertProduct") ) {
 			Product product = new Product();
@@ -81,10 +97,14 @@
 
 			Producer producer = producerDAO.findProducerByName(request.getParameter("producer"));
 			product.setProducer(producer);
-			int id = productDAO.insertProduct(product);
-			out.println("<!-- inserted product '" + product.getName() + "' with id = '" + id + "' -->");
+			try{
+				int id = productDAO.insertProduct(product);
+				note="Inserimento product riuscito!";
+			}catch(Exception e){
+				note="Errore inserimento product";
+			}
 		}
-
+		
 		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.
 	%>
 
@@ -133,7 +153,7 @@
 				while ( iterator.hasNext() ) {
 					Producer producer = (Producer) iterator.next();
 			%>
-			<option value="<%= producer.getId() %>"><%= producer.getName()%></option>
+			<option value="<%= producer.getName() %>"><%= producer.getName()%></option>
 			<%
 				}// end while
 			%>
@@ -164,6 +184,9 @@
 		<a href="<%= request.getContextPath() %>">Ricarica lo stato iniziale di questa pagina</a>
 	</div>
 
+	<div id="notes">
+		<p><%=note %></p>
+	</div>
 	</body>
 
 </html>

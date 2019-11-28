@@ -166,6 +166,7 @@ task prepareWar(){
             from "$buildDir/classes/java/main/"
             into "$buildDir/tmp/war/WEB-INF/classes/"
         }
+        
 
         //EVENTUALLY - LIBS
 //    copy {
@@ -189,6 +190,8 @@ war {
     //from 'tmp/war'
     include "*.cfg.xml"
     include "*.jsp"
+    include "/scripts/*.js"
+    include "/styles/*.css"
 }
 
 
@@ -211,7 +214,7 @@ task prepareEar(){
 //        }
         copy {
             from "$projectDir/settings/application.xml"
-            into "$buildDir/tmp/ear/MATA-INF/"
+            into "$buildDir/tmp/ear/META-INF/"
         }
 
         /*
