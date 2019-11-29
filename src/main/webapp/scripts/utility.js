@@ -4,3 +4,10 @@ function appendElement(text, div){
 	node.appendChild(textnode);                             
 	document.getElementById(div).appendChild(node);
 }
+
+function insertInCart(productNumber){
+	var f = document.createElement("form");
+	f.action="/demo/?operation=insertCart&code="+productNumber;
+	document.body.appendChild(f);
+	f.submit();
+}

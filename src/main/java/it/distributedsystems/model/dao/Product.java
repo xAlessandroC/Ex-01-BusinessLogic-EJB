@@ -77,4 +77,23 @@ public class Product implements Serializable {
     public void setProducer(Producer producer) {
         this.producer = producer;
     }
+  
+    @Override
+    public int hashCode() {
+    	return this.productNumber;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	if (obj == this) {
+    		return true; 
+    	} 
+    	if (obj == null || obj.getClass() != this.getClass()) {
+    		return false; 
+    	}
+    	
+    	Product p = (Product) obj;
+    	
+    	return p.getProductNumber() == this.getProductNumber();
+    }
 }

@@ -1,9 +1,10 @@
 <%@ page session ="true"%>
 <%@ page import="java.util.*" %>
 <%@ page import="it.distributedsystems.model.dao.*" %>
-
+<%@ page import="it.distributedsystems.model.ejb.*" %>
 
 <%!
+	Cart cart = Cart.getCart();
 	String note="";
 	String printTableRow(Product product, String url) {
 		StringBuffer html = new StringBuffer();
@@ -19,8 +20,16 @@
 
 				.append("<td>")
 				.append( (product.getProducer() == null) ? "n.d." : product.getProducer().getName() )
-				.append("</td>");
-
+				.append("</td>")
+				
+				.append("<td><form>")
+				.append("<input type=\"hidden\" name=\"operation\" value=\"insertCart\"/>")
+				.append("<input type=\"hidden\" name=\"code\" value=\"")
+				.append(product.getProductNumber())
+				.append("\"/>")
+				.append("<input type=\"submit\" name=\"submit\" value=\"insert\"/>")
+				.append("</form></td>");
+		
 		html
 				.append("</tr>");
 
@@ -33,6 +42,26 @@
 		while ( iterator.hasNext() ) {
 			html.append( printTableRow( (Product) iterator.next(), url ) );
 		}
+		return html.toString();
+	}
+	
+	String printCart(){
+		Map<Product,Integer> items = cart.getAllItems();
+		Iterator iterator = items.keySet().iterator();
+		StringBuffer html = new StringBuffer();
+		while ( iterator.hasNext() ) {
+			Product product = (Product)iterator.next();
+			
+			html.append("<li>")
+			.append(product.getName())
+			.append(",")
+			.append(product.getProductNumber())
+			.append("----->")
+			.append(items.get(product))
+			.append("</li>");
+			
+		}
+		
 		return html.toString();
 	}
 %>
@@ -68,6 +97,7 @@
 		System.out.println( purchaseDAO );
 		System.out.println( productDAO );
 		System.out.println( producerDAO );
+		System.out.println( cart );
 		
 		String operation = request.getParameter("operation");
 		if ( operation != null && operation.equals("insertCustomer") ) {
@@ -104,7 +134,16 @@
 				note="Errore inserimento product";
 			}
 		}
-		
+		else if ( operation != null && operation.equals("insertCart") ) {
+			try{
+				int number = Integer.parseInt(request.getParameter("code"));
+				Product product = productDAO.findProductByNumber(number);
+				cart.addItem(product);
+				note="Inserito in carrello!";
+			}catch(Exception e){
+				note="Errore inserimento product nel cart";
+			}
+		}
 		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.
 	%>
 
@@ -182,6 +221,11 @@
 
 	<div>
 		<a href="<%= request.getContextPath() %>">Ricarica lo stato iniziale di questa pagina</a>
+	</div>
+	
+	<div>
+		<h3>CART</h3>
+		<ul><%=printCart() %></ul>
 	</div>
 
 	<div id="notes">
