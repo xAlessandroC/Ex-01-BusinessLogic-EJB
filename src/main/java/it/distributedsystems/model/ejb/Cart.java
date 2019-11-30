@@ -20,7 +20,7 @@ public class Cart {
 
 	private Map<Product,Integer> items;
 	
-	public static Cart getCart() {
+	/*public static Cart getCart() {
         Hashtable props = new Hashtable();
         props.put(Context.URL_PKG_PREFIXES, "org.jboss.naming.remote.client.InitialContextFactory");
         Cart cart=null;
@@ -32,7 +32,7 @@ public class Cart {
         	System.err.println(e);
         }
         return cart;
-	}
+	}*/
 	
 	public Cart() {
 		this.items=new HashMap<>();
