@@ -23,11 +23,17 @@
 				.append("</td>")
 				
 				.append("<td><form>")
-				.append("<input type=\"hidden\" name=\"operation\" value=\"insertCart\"/>")
 				.append("<input type=\"hidden\" name=\"code\" value=\"")
 				.append(product.getProductNumber())
 				.append("\"/>")
-				.append("<input type=\"submit\" name=\"submit\" value=\"insert\"/>")
+				.append("<button type=\"submit\" name=\"operation\" value=\"insertCart\">insert</input>")
+				.append("</form></td>")
+		
+				.append("<td><form>")
+				.append("<input type=\"hidden\" name=\"code\" value=\"")
+				.append(product.getProductNumber())
+				.append("\"/>")
+				.append("<button type=\"submit\" name=\"operation\" value=\"removeCart\">remove</input>")
 				.append("</form></td>");
 		
 		html
@@ -46,7 +52,8 @@
 	}
 	
 	String printCart(){
-		Map<Product,Integer> items = cart.getAllItems();
+		Map<Product,Integer> items = cart.getItems();
+		System.out.println("##JSP:"+items+","+items.size());
 		Iterator iterator = items.keySet().iterator();
 		StringBuffer html = new StringBuffer();
 		while ( iterator.hasNext() ) {
@@ -61,7 +68,7 @@
 			.append("</li>");
 			
 		}
-		
+		System.out.println("##JSP:"+html.toString());
 		return html.toString();
 	}
 %>
@@ -142,6 +149,16 @@
 				note="Inserito in carrello!";
 			}catch(Exception e){
 				note="Errore inserimento product nel cart";
+			}
+		}
+		else if ( operation != null && operation.equals("removeCart") ) {
+			try{
+				int number = Integer.parseInt(request.getParameter("code"));
+				Product product = productDAO.findProductByNumber(number);
+				cart.removeItem(product);
+				note="Rimosso da carrello!";
+			}catch(Exception e){
+				note="Errore rimozione product dal cart";
 			}
 		}
 		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.

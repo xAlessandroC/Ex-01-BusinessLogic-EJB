@@ -3,6 +3,7 @@ package it.distributedsystems.model.ejb;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import it.distributedsystems.model.dao.Product;
 @Local(Cart.class)
 public class Cart {
 
-	private List<Product> products;
 	private Map<Product,Integer> items;
 	
 	public static Cart getCart() {
@@ -36,8 +36,10 @@ public class Cart {
 	
 	public Cart() {
 		this.items=new HashMap<>();
-		
-		//this.products = new ArrayList<>();
+	}
+	
+	public Map<Product,Integer> getItems(){
+		return this.items;
 	}
 	
 	public void addItem(Product product) {
@@ -46,8 +48,7 @@ public class Cart {
 		}else{
 			this.items.put(product,1);
 		}
-		
-		//this.products.add(product);
+		show();
 	}
 	
 	public void removeItem(Product product) {
@@ -58,23 +59,19 @@ public class Cart {
 			else
 				this.items.put(product,this.items.get(product)-1);
 		}
-		
-		
-		/*int index=-1;
-		for(int i=0;i<this.products.size();i++) {
-			if(this.products.get(i).getProductNumber() == product.getProductNumber()) {
-				index=i;
-				break;
-			}
-		}
-		if(index>=0)
-			this.products.remove(index);*/
+		show();
 	}
 	
-	public Map<Product,Integer> getAllItems(){
-		return this.items;
-		
-		//return this.products;
+	public void show() {
+		Map<Product,Integer> items = this.getItems();
+		Iterator iterator = items.keySet().iterator();
+		System.out.println("##CONTENT");
+		while ( iterator.hasNext() ) {
+			Product product = (Product)iterator.next();
+			System.out.print(product.getName()+",");
+			System.out.print(product.getProductNumber()+",");
+			System.out.println(this.items.get(product));
+		}
 	}
 	
 	//public boolean confirmOrder()
