@@ -17,7 +17,7 @@ public class CartFactory {
         Cart cart=null;
         try {
         InitialContext context = new InitialContext(props);
-        Object obj = context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/Cart!it.distributedsystems.model.ejb.Cart");
+        Object obj = context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3Cart!it.distributedsystems.model.ejb.Cart");
         cart = (Cart) obj;
         }catch(Exception e) {
         	System.err.println(e);

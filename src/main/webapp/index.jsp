@@ -4,15 +4,14 @@
 <%@ page import="it.distributedsystems.model.ejb.*" %>
 
 <jsp:useBean id="cartFactory" class="it.distributedsystems.model.ejb.CartFactory" scope="application"/>
-<%! Cart cart=null; %>
+<%! Cart cart=null;%>
 <%
 	if(request.getSession().getAttribute("cart")==null)
 		request.getSession().setAttribute("cart",cartFactory.getCart());
-	cart=(Cart)request.getSession().getAttribute("cart");
+	cart= (Cart) request.getSession().getAttribute("cart");
 %>
 
-<%!
-	//Cart cart = Cart.getCart();
+<%!//Cart cart = Cart.getCart();
 	String note="";
 	String printTableRow(Product product, String url) {
 		StringBuffer html = new StringBuffer();
@@ -78,8 +77,7 @@
 		}
 		System.out.println("##JSP:"+html.toString());
 		return html.toString();
-	}
-%>
+	}%>
 
 <html>
 
