@@ -73,6 +73,9 @@ public class EJB3Cart implements Cart{
 			System.out.println(this.items.get(product));
 		}
 	}
+
+	public void clear() {
+		this.items.clear();
+	}
 	
-	//public boolean confirmOrder()
 }

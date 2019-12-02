@@ -167,6 +167,22 @@
 				note="Errore rimozione product dal cart";
 			}
 		}
+		else if ( operation != null && operation.equals("buy") ) {
+			try{
+				Purchase p = new Purchase();
+				Map<Product,Integer> items = cart.getItems();
+				
+				p.setProducts(items.keySet());
+				p.setCustomer(new Customer("ciccino"));
+				
+				purchaseDAO.insertPurchase(p);
+
+				cart.clear();
+				note="Ordine effettuato con successo, carrello vuoto!";
+			}catch(Exception e){
+				note="Errore nel completamento dell'ordine!";
+			}
+		}
 		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.
 	%>
 
@@ -245,6 +261,10 @@
 	<div>
 		<a href="<%= request.getContextPath() %>">Ricarica lo stato iniziale di questa pagina</a>
 	</div>
+	
+	<form>
+		<input type="submit" name="operation" value="buy"/>
+	</form>
 	
 	<div>
 		<h3>CART</h3>
