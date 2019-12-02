@@ -20,6 +20,10 @@
 		<param-name>dao</param-name>
 		<param-value>it.distributedsystems.model.ejb.EJB3DaoFactory</param-value>
 	</context-param>
+	<context-param>
+		<param-name>cartFactory</param-name>
+		<param-value>it.distributedsystems.model.ejb.CartFactory</param-value>
+	</context-param>
 
 	<!-- Handle exceptions and errors -->
 	

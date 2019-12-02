@@ -4,3 +4,13 @@ function appendElement(text, div){
 	node.appendChild(textnode);                             
 	document.getElementById(div).appendChild(node);
 }
+
+function modifyCart(op){
+	var f = document.getElementById("cartForm");
+	var hiddenInput = document.getElementById("operation");
+	if(op==="insert")
+		hiddenInput.value="insertCart";
+	if(op==="remove")
+		hiddenInput.value="removeCart";
+	f.submit();
+}

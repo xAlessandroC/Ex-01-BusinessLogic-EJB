@@ -187,7 +187,7 @@ war {
 //   dependsOn('prepareWar')
 
     from 'src/webapp' // adds a file-set to the root of the archive
-    //from 'tmp/war'
+
     include "*.cfg.xml"
     include "*.jsp"
     include "/scripts/*.js"

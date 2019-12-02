@@ -14,6 +14,7 @@ public class Product implements Serializable {
     protected int productNumber;
     protected String name;
     protected int price;
+    protected int quantity;
     protected Purchase purchase;
     protected Producer producer;
 
@@ -53,6 +54,14 @@ public class Product implements Serializable {
     public void setPrice(int price) {
         this.price = price;
     }
+    
+    public int getQuantity() {
+        return this.quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 
     @ManyToOne(
             cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
@@ -76,5 +85,24 @@ public class Product implements Serializable {
 
     public void setProducer(Producer producer) {
         this.producer = producer;
+    }
+  
+    @Override
+    public int hashCode() {
+    	return this.productNumber;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	if (obj == this) {
+    		return true; 
+    	} 
+    	if (obj == null || obj.getClass() != this.getClass()) {
+    		return false; 
+    	}
+    	
+    	Product p = (Product) obj;
+    	
+    	return p.getProductNumber() == this.getProductNumber();
     }
 }

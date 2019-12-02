@@ -1,9 +1,17 @@
 <%@ page session ="true"%>
 <%@ page import="java.util.*" %>
 <%@ page import="it.distributedsystems.model.dao.*" %>
+<%@ page import="it.distributedsystems.model.ejb.*" %>
 
+<jsp:useBean id="cartFactory" class="it.distributedsystems.model.ejb.CartFactory" scope="application"/>
+<%! Cart cart=null;%>
+<%
+	if(request.getSession().getAttribute("cart")==null)
+		request.getSession().setAttribute("cart",cartFactory.getCart());
+	cart= (Cart) request.getSession().getAttribute("cart");
+%>
 
-<%!
+<%!//Cart cart = Cart.getCart();
 	String note="";
 	String printTableRow(Product product, String url) {
 		StringBuffer html = new StringBuffer();
@@ -19,8 +27,22 @@
 
 				.append("<td>")
 				.append( (product.getProducer() == null) ? "n.d." : product.getProducer().getName() )
-				.append("</td>");
-
+				.append("</td>")
+				
+				.append("<td><form>")
+				.append("<input type=\"hidden\" name=\"code\" value=\"")
+				.append(product.getProductNumber())
+				.append("\"/>")
+				.append("<button type=\"submit\" name=\"operation\" value=\"insertCart\">insert</input>")
+				.append("</form></td>")
+		
+				.append("<td><form>")
+				.append("<input type=\"hidden\" name=\"code\" value=\"")
+				.append(product.getProductNumber())
+				.append("\"/>")
+				.append("<button type=\"submit\" name=\"operation\" value=\"removeCart\">remove</input>")
+				.append("</form></td>");
+		
 		html
 				.append("</tr>");
 
@@ -35,7 +57,27 @@
 		}
 		return html.toString();
 	}
-%>
+	
+	String printCart(){
+		Map<Product,Integer> items = cart.getItems();
+		System.out.println("##JSP:"+items+","+items.size());
+		Iterator iterator = items.keySet().iterator();
+		StringBuffer html = new StringBuffer();
+		while ( iterator.hasNext() ) {
+			Product product = (Product)iterator.next();
+			
+			html.append("<li>")
+			.append(product.getName())
+			.append(",")
+			.append(product.getProductNumber())
+			.append("----->")
+			.append(items.get(product))
+			.append("</li>");
+			
+		}
+		System.out.println("##JSP:"+html.toString());
+		return html.toString();
+	}%>
 
 <html>
 
@@ -68,6 +110,7 @@
 		System.out.println( purchaseDAO );
 		System.out.println( productDAO );
 		System.out.println( producerDAO );
+		System.out.println( cart );
 		
 		String operation = request.getParameter("operation");
 		if ( operation != null && operation.equals("insertCustomer") ) {
@@ -94,6 +137,8 @@
 			Product product = new Product();
 			product.setName( request.getParameter("name") );
 			product.setProductNumber(Integer.parseInt(request.getParameter("number")));
+			product.setPrice(Integer.parseInt(request.getParameter("price")));
+			product.setQuantity(Integer.parseInt(request.getParameter("quantity")));
 
 			Producer producer = producerDAO.findProducerByName(request.getParameter("producer"));
 			product.setProducer(producer);
@@ -104,7 +149,46 @@
 				note="Errore inserimento product";
 			}
 		}
-		
+		else if ( operation != null && operation.equals("insertCart") ) {
+			try{
+				int number = Integer.parseInt(request.getParameter("code"));
+				Product product = productDAO.findProductByNumber(number);
+				cart.addItem(product);
+				note="Inserito in carrello!";
+			}catch(Exception e){
+				note="Errore inserimento product nel cart";
+			}
+		}
+		else if ( operation != null && operation.equals("removeCart") ) {
+			try{
+				int number = Integer.parseInt(request.getParameter("code"));
+				Product product = productDAO.findProductByNumber(number);
+				cart.removeItem(product);
+				note="Rimosso da carrello!";
+			}catch(Exception e){
+				note="Errore rimozione product dal cart";
+			}
+		}
+		else if ( operation != null && operation.equals("buy") ) {
+			try{
+				Purchase p = new Purchase();
+				Map<Product,Integer> items = cart.getItems();
+				
+				p.setProducts(items.keySet());
+				p.setCustomer(customerDAO.findCustomerByName("ciccino"));
+				
+				int id = purchaseDAO.insertPurchase(p);
+
+				for(Product p1 : items.keySet()){
+					productDAO.updateProductByPurchase(p1.getId(), p);
+				}
+				
+				cart.clear();
+				note="Ordine effettuato con successo, carrello vuoto!";
+			}catch(Exception e){
+				note="Errore nel completamento dell'ordine!";
+			}
+		}
 		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.
 	%>
 
@@ -147,6 +231,8 @@
 		<form>
 			Name: <input type="text" name="name"/><br/>
 			Product Number: <input type="text" name="number"/><br/>
+			Price: <input type="text" name="price"/><br/>
+			Quantity: <input type="text" name="quantity"/><br/>
 			Producers: <select name="producer">
 			<%
 				Iterator iterator = producers.iterator();
@@ -182,6 +268,15 @@
 
 	<div>
 		<a href="<%= request.getContextPath() %>">Ricarica lo stato iniziale di questa pagina</a>
+	</div>
+	
+	<form>
+		<input type="submit" name="operation" value="buy"/>
+	</form>
+	
+	<div>
+		<h3>CART</h3>
+		<ul><%=printCart() %></ul>
 	</div>
 
 	<div id="notes">
