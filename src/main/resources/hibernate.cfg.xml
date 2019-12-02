@@ -24,9 +24,6 @@
     <property name="connection.pool_size">10</property>
     <property name="current_session_context_class">thread</property>
 
-     <mapping class="it.distributedsystems.model.ejb.Employee" />
-     <mapping class="it.distributedsystems.model.ejb.Department" />
-
      <mapping class="it.distributedsystems.model.dao.Customer" />
      <mapping class="it.distributedsystems.model.dao.Producer" />
      <mapping class="it.distributedsystems.model.dao.Product" />

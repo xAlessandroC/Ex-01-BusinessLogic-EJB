@@ -9,6 +9,8 @@ public interface ProductDAO {
     public int removeProductByNumber(int productNumber);
 
     public int removeProductById(int id);
+    
+    public void updateProductByPurchase(int idproduct,Purchase purchase);
 
     public Product findProductByNumber(int productNumber);
 

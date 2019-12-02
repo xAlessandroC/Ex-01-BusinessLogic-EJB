@@ -75,6 +75,19 @@ public class EJB3ProductDAO implements ProductDAO {
         else
             return 0;
     }
+    
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void updateProductByPurchase(int idproduct,Purchase purchase) {
+    	Product product = em.find(Product.class, idproduct);
+    	
+    	product.setPurchase(em.merge(purchase));
+    	
+    	if (product.getProducer()!= null && product.getProducer().getId() > 0)
+   		 product.setProducer(em.merge(product.getProducer()));
+    	 
+    	em.merge(product);
+    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

@@ -14,6 +14,7 @@ public class Product implements Serializable {
     protected int productNumber;
     protected String name;
     protected int price;
+    protected int quantity;
     protected Purchase purchase;
     protected Producer producer;
 
@@ -52,6 +53,14 @@ public class Product implements Serializable {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+    
+    public int getQuantity() {
+        return this.quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     @ManyToOne(
