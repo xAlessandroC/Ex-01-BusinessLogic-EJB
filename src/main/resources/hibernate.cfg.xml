@@ -28,6 +28,7 @@
      <mapping class="it.distributedsystems.model.dao.Producer" />
      <mapping class="it.distributedsystems.model.dao.Product" />
      <mapping class="it.distributedsystems.model.dao.Purchase" />
+     <mapping class="it.distributedsystems.model.dao.PurchaseProduct" />
  
  </session-factory>
 </hibernate-configuration>

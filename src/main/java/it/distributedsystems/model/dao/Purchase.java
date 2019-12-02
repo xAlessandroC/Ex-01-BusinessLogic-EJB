@@ -12,7 +12,7 @@ public class Purchase implements Serializable {
     protected int id;
     protected int purchaseNumber;
     protected Customer customer;
-    protected Set<Product> products;
+    protected Set<PurchaseProduct> ass_products;
 
     public Purchase() {}
 
@@ -21,12 +21,6 @@ public class Purchase implements Serializable {
     public Purchase(int purchaseNumber, Customer customer) {
         this.purchaseNumber = purchaseNumber;
         this.customer = customer;
-    }
-
-    public Purchase(int purchaseNumber, Customer customer, Set<Product> products) {
-        this.purchaseNumber = purchaseNumber;
-        this.customer = customer;
-        this.products = products;
     }
 
     @Id
@@ -59,7 +53,7 @@ public class Purchase implements Serializable {
             fetch=FetchType.LAZY,
             mappedBy = "purchase"
     )
-    public Set<Product> getProducts() { return products; }
+    public Set<PurchaseProduct> getPurchaseProducts() { return ass_products; }
 
-    public void setProducts(Set<Product> products) { this.products = products; }
+    public void setPurchaseProducts(Set<PurchaseProduct> products) { this.ass_products = products; }
 }

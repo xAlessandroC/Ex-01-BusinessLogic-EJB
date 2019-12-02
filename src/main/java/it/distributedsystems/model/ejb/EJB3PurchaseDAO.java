@@ -5,6 +5,7 @@ import it.distributedsystems.model.dao.Customer;
 import it.distributedsystems.model.dao.Product;
 import it.distributedsystems.model.dao.Purchase;
 import it.distributedsystems.model.dao.PurchaseDAO;
+import it.distributedsystems.model.dao.PurchaseProduct;
 
 import java.util.HashSet;
 import java.util.List;
@@ -38,14 +39,14 @@ import javax.persistence.PersistenceContext;
             purchase.setCustomer(em.merge(purchase.getCustomer()));
 
         //riattacco i product al contesto di persistenza
-        Set<Product> products = new HashSet<Product>();
+        Set<PurchaseProduct> products = new HashSet<PurchaseProduct>();
 
-        if (purchase.getProducts()!= null ){
-            for (Product product : purchase.getProducts()){
-                if(product != null && product.getId() > 0)
+        if (purchase.getPurchaseProducts()!= null ){
+            for (PurchaseProduct product : purchase.getPurchaseProducts()){
+                if(product != null)
                     products.add(em.merge(product));
             }
-            purchase.setProducts(products);
+            purchase.setPurchaseProducts(products);
         }
 
         em.persist(purchase);
