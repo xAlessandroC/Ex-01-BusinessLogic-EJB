@@ -14,13 +14,13 @@ public class PurchaseProduct {
 	private PurchaseProductPK id;
 	@ManyToOne(
             cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER	//LazyInitializaztionException
     )
 	@MapsId("purchaseId")
 	private Purchase purchase;
 	@ManyToOne(
             cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER //LazyInitializaztionException
     )
 	@MapsId("productId")
 	private Product product;

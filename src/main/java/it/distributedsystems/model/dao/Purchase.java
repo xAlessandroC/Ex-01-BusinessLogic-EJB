@@ -50,7 +50,7 @@ public class Purchase implements Serializable {
 
     @OneToMany(
             cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
-            fetch=FetchType.LAZY,
+            fetch=FetchType.EAGER, //LazyInitializaztionException
             mappedBy = "purchase"
     )
     public Set<PurchaseProduct> getPurchaseProducts() { return ass_products; }

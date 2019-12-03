@@ -193,10 +193,20 @@
 					ppDAO.insert(pp);
 				}
 				
+				/*System.out.println("##DEBUG LETTURA PURCHASE");
+				Purchase pur = purchaseDAO.findPurchaseById(4);
+				System.out.println("SET:"+pur.getPurchaseProducts());
+				for(PurchaseProduct temp : pur.getPurchaseProducts()){
+					System.out.println(temp.getProduct());
+					System.out.println("NAME: "+temp.getProduct().getName());
+					System.out.println("QUANTITY: "+temp.getQuantity());
+				}*/
+				
 				cart.clear();
 				note="Ordine effettuato con successo, carrello vuoto!";
 			}catch(Exception e){
 				note="Errore nel completamento dell'ordine!";
+				System.out.println(e);
 			}
 		}
 		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.
