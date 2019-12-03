@@ -14,6 +14,7 @@
         <class>it.distributedsystems.model.dao.Purchase</class>
         <class>it.distributedsystems.model.dao.Producer</class>
         <class>it.distributedsystems.model.dao.Customer</class>
+        <class>it.distributedsystems.model.dao.PurchaseProduct</class>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <validation-mode>CALLBACK</validation-mode>
         <properties>

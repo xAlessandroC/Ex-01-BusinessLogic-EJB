@@ -18,15 +18,23 @@
 		html
 				.append("<tr>")
 				.append("<td>")
+				.append(product.getProductNumber())
+				.append("</td>")
+				
+				.append("<td>")
 				.append(product.getName())
 				.append("</td>")
 
 				.append("<td>")
-				.append(product.getProductNumber())
-				.append("</td>")
-
-				.append("<td>")
 				.append( (product.getProducer() == null) ? "n.d." : product.getProducer().getName() )
+				.append("</td>")
+				
+				.append("<td>")
+				.append(product.getPrice())
+				.append("</td>")
+				
+				.append("<td>")
+				.append(product.getQuantity())
 				.append("</td>")
 				
 				.append("<td><form>")
@@ -34,12 +42,6 @@
 				.append(product.getProductNumber())
 				.append("\"/>")
 				.append("<button type=\"submit\" name=\"operation\" value=\"insertCart\">insert</input>")
-				.append("</form></td>")
-		
-				.append("<td><form>")
-				.append("<input type=\"hidden\" name=\"code\" value=\"")
-				.append(product.getProductNumber())
-				.append("\"/>")
 				.append("<button type=\"submit\" name=\"operation\" value=\"removeCart\">remove</input>")
 				.append("</form></td>");
 		
@@ -103,6 +105,7 @@
 		PurchaseDAO purchaseDAO = daoFactory.getPurchaseDAO();
 		ProductDAO productDAO = daoFactory.getProductDAO();
 		ProducerDAO producerDAO = daoFactory.getProducerDAO();
+		PurchaseProductDAO ppDAO = daoFactory.getPurchaseProductDAO();
 
 		System.out.println( "###DEBUG###" );
 		System.out.println( daoFactory );
@@ -110,6 +113,7 @@
 		System.out.println( purchaseDAO );
 		System.out.println( productDAO );
 		System.out.println( producerDAO );
+		System.out.println( ppDAO );
 		System.out.println( cart );
 		
 		String operation = request.getParameter("operation");
@@ -174,19 +178,35 @@
 				Purchase p = new Purchase();
 				Map<Product,Integer> items = cart.getItems();
 				
-				p.setProducts(items.keySet());
 				p.setCustomer(customerDAO.findCustomerByName("ciccino"));
 				
-				int id = purchaseDAO.insertPurchase(p);
-
-				for(Product p1 : items.keySet()){
-					productDAO.updateProductByPurchase(p1.getId(), p);
+				//int id = purchaseDAO.insertPurchase(p);
+				
+				for (Product pr : items.keySet()){
+					PurchaseProduct pp = new PurchaseProduct();
+					int qnt = cart.getItems().get(pr);
+					pr.setQuantity(pr.getQuantity() - qnt);
+					pp.setProduct(pr);
+					pp.setPurchase(p);
+					pp.setQuantity(qnt);
+					
+					ppDAO.insert(pp);
 				}
+				
+				/*System.out.println("##DEBUG LETTURA PURCHASE");
+				Purchase pur = purchaseDAO.findPurchaseById(4);
+				System.out.println("SET:"+pur.getPurchaseProducts());
+				for(PurchaseProduct temp : pur.getPurchaseProducts()){
+					System.out.println(temp.getProduct());
+					System.out.println("NAME: "+temp.getProduct().getName());
+					System.out.println("QUANTITY: "+temp.getQuantity());
+				}*/
 				
 				cart.clear();
 				note="Ordine effettuato con successo, carrello vuoto!";
 			}catch(Exception e){
 				note="Errore nel completamento dell'ordine!";
+				System.out.println(e);
 			}
 		}
 		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.
@@ -261,7 +281,7 @@
 	<div>
 		<p>Products currently in the database:</p>
 		<table>
-			<tr><th>Name</th><th>ProductNumber</th><th>Publisher</th><th></th></tr>
+			<tr><th>ProductNumber</th><th>Name</th><th>Publisher</th><th>Price</th><th>Available</th><th>Operation</th></tr>
 			<%= printTableRows( productDAO.getAllProducts(), request.getContextPath() ) %>
 		</table>
 	</div>

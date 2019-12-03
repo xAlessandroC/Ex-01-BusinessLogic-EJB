@@ -91,4 +91,16 @@ public class EJB3DaoFactory extends DAOFactory {
             return null;
         }
     }
+    
+    public PurchaseProductDAO getPurchaseProductDAO() {
+        try {
+            InitialContext context = getInitialContext();
+            PurchaseProductDAO result = (PurchaseProductDAO)context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3PurchaseProductDAO!it.distributedsystems.model.dao.PurchaseProductDAO");
+        	return result;
+        	//return purchase;
+        } catch (Exception var3) {
+            logger.error("Error looking up EJB3PurchaseProductDAO", var3);
+            return null;
+        }
+    }
 }

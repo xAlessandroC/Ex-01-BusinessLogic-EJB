@@ -15,7 +15,7 @@ public class Product implements Serializable {
     protected String name;
     protected int price;
     protected int quantity;
-    protected Purchase purchase;
+    protected Set<PurchaseProduct> ass_purchase;
     protected Producer producer;
 
     public Product() {}
@@ -55,24 +55,27 @@ public class Product implements Serializable {
         this.price = price;
     }
     
-    public int getQuantity() {
+    public int getQuantity()  {
         return this.quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(int quantity) throws IllegalArgumentException{
+    	if(quantity<0)
+    		throw new IllegalArgumentException("quantity must be non negative!");
         this.quantity = quantity;
     }
 
-    @ManyToOne(
-            cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
-            fetch = FetchType.LAZY
+    @OneToMany(
+            cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},
+            fetch=FetchType.LAZY,
+            mappedBy = "product"
     )
-    public Purchase getPurchase() {
-        return this.purchase;
+    public Set<PurchaseProduct> getPurchase() {
+        return this.ass_purchase;
     }
 
-    public void setPurchase(Purchase purchase) {
-        this.purchase = purchase;
+    public void setPurchase(Set<PurchaseProduct> purchase) {
+        this.ass_purchase = purchase;
     }
 
     @ManyToOne(
