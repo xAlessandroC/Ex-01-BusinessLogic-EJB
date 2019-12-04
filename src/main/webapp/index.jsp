@@ -62,7 +62,7 @@
 	
 	String printCart(){
 		Map<Product,Integer> items = cart.getItems();
-		System.out.println("##JSP:"+items+","+items.size());
+		// System.out.println("##JSP:"+items+","+items.size());
 		Iterator iterator = items.keySet().iterator();
 		StringBuffer html = new StringBuffer();
 		while ( iterator.hasNext() ) {
@@ -118,10 +118,12 @@
 		
 		String operation = request.getParameter("operation");
 		if ( operation != null && operation.equals("insertCustomer") ) {
+			//per ipotesi se aggiungo un customer vuol dire che sono io
 			Customer customer = new Customer();
 			customer.setName( request.getParameter("name") );
 			try{
 				int id = customerDAO.insertCustomer( customer );
+				request.getSession().setAttribute("identity",customer);
 				note="Inserimento customer riuscito!";
 			}catch(Exception e){
 				note="Errore inserimento customer";
@@ -178,9 +180,17 @@
 				Purchase p = new Purchase();
 				Map<Product,Integer> items = cart.getItems();
 				
-				p.setCustomer(customerDAO.findCustomerByName("ciccino"));
-				
-				//int id = purchaseDAO.insertPurchase(p);
+				Customer customer;
+				if(request.getSession().getAttribute("identity")==null){
+					try{
+						customer=customerDAO.findCustomerByName("Anonymous");
+					}catch(Exception e){
+						customer=new Customer("Anonymous");
+					}						
+				}else{
+					customer=(Customer)request.getSession().getAttribute("identity");
+				}
+				p.setCustomer(customer);
 				
 				for (Product pr : items.keySet()){
 					PurchaseProduct pp = new PurchaseProduct();
@@ -190,7 +200,7 @@
 					pp.setPurchase(p);
 					pp.setQuantity(qnt);
 					
-					ppDAO.insert(pp);
+					ppDAO.insertPurchaseProduct(pp);
 				}
 				
 				/*System.out.println("##DEBUG LETTURA PURCHASE");
@@ -233,15 +243,6 @@
 		</form>
 	</div>
 
-	<div>
-		<p>Add Product:</p>
-		<form>
-			Name: <input type="text" name="name"/><br/>
-			Product Number: <input type="text" name="number"/><br/>
-			<input type="hidden" name="operation" value="insertProduct"/>
-			<input type="submit" name="submit" value="submit"/>
-		</form>
-	</div>
 	<%
 		List producers = producerDAO.getAllProducers();
 		if ( producers.size() > 0 ) {

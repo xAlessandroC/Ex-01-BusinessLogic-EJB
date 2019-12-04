@@ -6,8 +6,21 @@ import it.distributedsystems.model.dao.CustomerDAO;
 
 import javax.ejb.*;
 import javax.interceptor.Interceptors;
+import javax.jms.Connection;
+import javax.jms.Message;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSender;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.util.Hashtable;
 import java.util.List;
 
 @Stateless
@@ -19,9 +32,10 @@ public class EJB3CustomerDAO implements CustomerDAO {
     EntityManager em;
 
     @Override
-//    @Interceptors(OperationLogger.class)
+    @Interceptors(LoggingInterceptor.class)
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public int insertCustomer(Customer customer) {
+    	
         em.persist(customer);
         return customer.getId();
     }
