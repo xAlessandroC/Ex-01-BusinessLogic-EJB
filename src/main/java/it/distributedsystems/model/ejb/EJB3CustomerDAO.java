@@ -32,36 +32,9 @@ public class EJB3CustomerDAO implements CustomerDAO {
     EntityManager em;
 
     @Override
-//    @Interceptors(OperationLogger.class)
+    @Interceptors(LoggingInterceptor.class)
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public int insertCustomer(Customer customer) {
-    	
-    	//messaggio alla coda di logging
-    	 Hashtable props = new Hashtable();
-         props.put(Context.URL_PKG_PREFIXES, "org.jboss.naming.remote.client.InitialContextFactory");
-         Queue logQueue= null;
-         QueueConnectionFactory factory = null;
-         try {
-         InitialContext context = new InitialContext(props);
-         logQueue = (Queue) context.lookup("java:/jms/queue/loggingQueue");
-         factory = (QueueConnectionFactory) context.lookup("java:/ConnectionFactory");
-         
-         System.out.println("###DEBUG JMS");
-         System.out.println(logQueue);
-         System.out.println(factory);
-         
-         QueueConnection connection = factory.createQueueConnection();
-         QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-         QueueSender sender = session.createSender(logQueue);
-         
-         connection.start();
-         TextMessage message = session.createTextMessage();
-         message.setText("Inserimento customer nel DB --- CUSTOMER DATA: "+customer.getName());
-         sender.send(message);
-         }catch(Exception e) {
-         	System.err.println(e);
-         }
-    	
     	
         em.persist(customer);
         return customer.getId();

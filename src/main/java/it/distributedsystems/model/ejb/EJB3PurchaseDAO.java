@@ -30,7 +30,7 @@ import javax.persistence.PersistenceContext;
     @PersistenceContext(unitName = "distributed-systems-demo")
     EntityManager em;
 
-//    @Interceptors(OperationLogger.class)
+    @Interceptors(LoggingInterceptor.class)
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public int insertPurchase(Purchase purchase) {
 

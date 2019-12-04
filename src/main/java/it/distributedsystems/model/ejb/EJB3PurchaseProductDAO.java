@@ -2,6 +2,9 @@ package it.distributedsystems.model.ejb;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -16,7 +19,9 @@ public class EJB3PurchaseProductDAO implements PurchaseProductDAO {
 	EntityManager em;
 	
 	@Override
-	public void insert(PurchaseProduct pp) {
+	@Interceptors(LoggingInterceptor.class)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void insertPurchaseProduct(PurchaseProduct pp) {
 		
 		if(pp.getProduct()!=null && pp.getProduct().getId()>0)
 			pp.setProduct(em.merge(pp.getProduct()));

@@ -2,5 +2,5 @@ package it.distributedsystems.model.dao;
 
 public interface PurchaseProductDAO {
 
-	public void insert(PurchaseProduct pp);
+	public void insertPurchaseProduct(PurchaseProduct pp);
 }

@@ -21,7 +21,7 @@ public class EJB3ProducerDAO implements ProducerDAO {
     EntityManager em;
 
     @Override
-//    @Interceptors(OperationLogger.class)
+    @Interceptors(LoggingInterceptor.class)
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public int insertProducer(Producer producer) {
         em.persist(producer);
