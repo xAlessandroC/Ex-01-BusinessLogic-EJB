@@ -1,9 +1,9 @@
 package it.distributedsystems.model.ejb;
 
-import java.util.Hashtable;
-
+import javax.annotation.Resource;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
+import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
@@ -20,26 +20,19 @@ import it.distributedsystems.model.dao.Product;
 import it.distributedsystems.model.dao.PurchaseProduct;
 
 public class LoggingInterceptor {
+	
+	@Resource(name="java:/jms/queue/loggingQueue")
+	private Queue logQueue;
+	@Resource(name="java:/ConnectionFactory")
+	private QueueConnectionFactory factory;
 
 	@AroundInvoke
 	public Object log(InvocationContext ctx) {
-		
-   	 	Hashtable props = new Hashtable();
-        props.put(Context.URL_PKG_PREFIXES, "org.jboss.naming.remote.client.InitialContextFactory");
-        Queue logQueue= null;
-        QueueConnectionFactory factory = null;
+	
         try {
-	        InitialContext context = new InitialContext(props);
-	        logQueue = (Queue) context.lookup("java:/jms/queue/loggingQueue");
-	        factory = (QueueConnectionFactory) context.lookup("java:/ConnectionFactory");
-	        
-	        // System.out.println("###DEBUG JMS");
-	        // System.out.println(logQueue);
-	        // System.out.println(factory);
-	        
-	        QueueConnection connection = factory.createQueueConnection();
+	        QueueConnection connection = this.factory.createQueueConnection();
 	        QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-	        QueueSender sender = session.createSender(logQueue);
+	        QueueSender sender = session.createSender(this.logQueue);
 	        
 	        connection.start();
 	        TextMessage message = session.createTextMessage();
@@ -74,6 +67,8 @@ public class LoggingInterceptor {
 	        
 	        message.setText(text);
 	        sender.send(message);
+	        connection.close();
+	        
 	        return ctx.proceed();
         }catch(Exception e) {
         	System.err.println(e);
