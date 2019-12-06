@@ -10,6 +10,9 @@ import javax.ejb.*;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import org.hibernate.Hibernate;
+
 import java.util.List;
 
 @Stateless
@@ -59,8 +62,9 @@ public class EJB3ProducerDAO implements ProducerDAO {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Producer findProducerByName(String name) {
         if(name != null && !name.equals("")) {
-            return (Producer) em.createQuery("FROM Producer p where p.name = :producerName").
+            Producer prod = (Producer) em.createQuery("FROM Producer p where p.name = :producerName").
                     setParameter("producerName", name).getSingleResult();
+            return prod;
         } else
             return null;
     }

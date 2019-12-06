@@ -12,15 +12,6 @@ import org.jboss.system.server.ServerInfo;
 
 public class EJB3DaoFactory extends DAOFactory {
     private static Logger logger = Logger.getLogger("DAOFactory");
-    
-    /*@EJB(name="ejb:distributed-systems-demo/distributed-systems-demo.war/EJB3CustomerDAO!it.distributedsystems.model.dao.CustomerDAO")
-    private CustomerDAO customer;
-    @EJB(name="ejb:distributed-systems-demo/distributed-systems-demo.war/EJB3PurchaseDAO!it.distributedsystems.model.dao.PurchaseDAO")
-    private PurchaseDAO purchase;
-    @EJB(name="ejb:distributed-systems-demo/distributed-systems-demo.war/EJB3ProductDAO!it.distributedsystems.model.dao.ProductDAO")
-    private ProductDAO product;
-    @EJB(name="java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3ProducerDAO!it.distributedsystems.model.dao.ProducerDAO")
-    private ProducerDAO producer;*/
 
     public EJB3DaoFactory() {
 
@@ -49,7 +40,6 @@ public class EJB3DaoFactory extends DAOFactory {
             InitialContext context = getInitialContext();
             CustomerDAO result = (CustomerDAO)context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3CustomerDAO!it.distributedsystems.model.dao.CustomerDAO");
         	return result;
-        	//return customer;
         } catch (Exception var3) {
             logger.error("Error looking up EJB3CustomerDAO", var3);
             return null;
@@ -61,7 +51,6 @@ public class EJB3DaoFactory extends DAOFactory {
             InitialContext context = getInitialContext();
             PurchaseDAO result = (PurchaseDAO)context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3PurchaseDAO!it.distributedsystems.model.dao.PurchaseDAO");
         	return result;
-        	//return purchase;
         } catch (Exception var3) {
             logger.error("Error looking up EJB3PurchaseDAO", var3);
             return null;
@@ -73,7 +62,6 @@ public class EJB3DaoFactory extends DAOFactory {
             InitialContext context = getInitialContext();
             ProductDAO result = (ProductDAO)context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3ProductDAO!it.distributedsystems.model.dao.ProductDAO");
         	return result;
-        	//return product;
         } catch (Exception var3) {
             logger.error("Error looking up EJB3ProductDAO", var3);
             return null;
@@ -85,7 +73,6 @@ public class EJB3DaoFactory extends DAOFactory {
             InitialContext context = getInitialContext();
             ProducerDAO result = (ProducerDAO)context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3ProducerDAO!it.distributedsystems.model.dao.ProducerDAO");
             return result;
-        	//return producer;
         } catch (Exception var3) {
             logger.error("Error looking up EJB3ProducerDAO", var3);
             return null;
@@ -97,7 +84,6 @@ public class EJB3DaoFactory extends DAOFactory {
             InitialContext context = getInitialContext();
             PurchaseProductDAO result = (PurchaseProductDAO)context.lookup("java:global/distributed-systems-demo/distributed-systems-demo.war/EJB3PurchaseProductDAO!it.distributedsystems.model.dao.PurchaseProductDAO");
         	return result;
-        	//return purchase;
         } catch (Exception var3) {
             logger.error("Error looking up EJB3PurchaseProductDAO", var3);
             return null;
