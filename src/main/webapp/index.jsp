@@ -3,16 +3,9 @@
 <%@ page import="it.distributedsystems.model.dao.*" %>
 <%@ page import="it.distributedsystems.model.ejb.*" %>
 
-<jsp:useBean id="cartFactory" class="it.distributedsystems.model.ejb.CartFactory" scope="application"/>
-<%! Cart cart=null;%>
-<%
-	if(request.getSession().getAttribute("cart")==null)
-		request.getSession().setAttribute("cart",cartFactory.getCart());
-	cart= (Cart) request.getSession().getAttribute("cart");
-%>
-
-<%!//Cart cart = Cart.getCart();
-	String note="";
+<%!
+	String userNote="";
+	String adminNote="";
 	String printTableRow(Product product, String url) {
 		StringBuffer html = new StringBuffer();
 		html
@@ -60,26 +53,7 @@
 		return html.toString();
 	}
 	
-	String printCart(){
-		Map<Product,Integer> items = cart.getItems();
-		// System.out.println("##JSP:"+items+","+items.size());
-		Iterator iterator = items.keySet().iterator();
-		StringBuffer html = new StringBuffer();
-		while ( iterator.hasNext() ) {
-			Product product = (Product)iterator.next();
-			
-			html.append("<li>")
-			.append(product.getName())
-			.append(",")
-			.append(product.getProductNumber())
-			.append("----->")
-			.append(items.get(product))
-			.append("</li>");
-			
-		}
-		System.out.println("##JSP:"+html.toString());
-		return html.toString();
-	}%>
+%>
 
 <html>
 
@@ -105,7 +79,6 @@
 		PurchaseDAO purchaseDAO = daoFactory.getPurchaseDAO();
 		ProductDAO productDAO = daoFactory.getProductDAO();
 		ProducerDAO producerDAO = daoFactory.getProducerDAO();
-		PurchaseProductDAO ppDAO = daoFactory.getPurchaseProductDAO();
 
 		System.out.println( "###DEBUG###" );
 		System.out.println( daoFactory );
@@ -113,20 +86,17 @@
 		System.out.println( purchaseDAO );
 		System.out.println( productDAO );
 		System.out.println( producerDAO );
-		System.out.println( ppDAO );
-		System.out.println( cart );
 		
 		String operation = request.getParameter("operation");
 		if ( operation != null && operation.equals("insertCustomer") ) {
-			//per ipotesi se aggiungo un customer vuol dire che sono io
+			
 			Customer customer = new Customer();
 			customer.setName( request.getParameter("name") );
 			try{
 				int id = customerDAO.insertCustomer( customer );
-				request.getSession().setAttribute("identity",customer);
-				note="Inserimento customer riuscito!";
+				adminNote="Inserimento customer riuscito!";
 			}catch(Exception e){
-				note="Errore inserimento customer";
+				adminNote="Errore inserimento customer";
 			}
 		}
 		else if ( operation != null && operation.equals("insertProducer") ) {
@@ -134,9 +104,9 @@
 			producer.setName( request.getParameter("name") );
 			try{
 				int id = producerDAO.insertProducer( producer );
-				note="Inserimento producer riuscito!";
+				adminNote="Inserimento producer riuscito!";
 			}catch(Exception e){
-				note="Errore inserimento producer";
+				adminNote="Errore inserimento producer";
 			}
 		}
 		else if ( operation != null && operation.equals("insertProduct") ) {
@@ -150,159 +120,84 @@
 			product.setProducer(producer);
 			try{
 				int id = productDAO.insertProduct(product);
-				note="Inserimento product riuscito!";
+				adminNote="Inserimento product riuscito!";
 			}catch(Exception e){
-				note="Errore inserimento product";
+				adminNote="Errore inserimento product";
 			}
 		}
-		else if ( operation != null && operation.equals("insertCart") ) {
-			try{
-				int number = Integer.parseInt(request.getParameter("code"));
-				Product product = productDAO.findProductByNumber(number);
-				cart.addItem(product);
-				note="Inserito in carrello!";
-			}catch(Exception e){
-				note="Errore inserimento product nel cart";
-			}
-		}
-		else if ( operation != null && operation.equals("removeCart") ) {
-			try{
-				int number = Integer.parseInt(request.getParameter("code"));
-				Product product = productDAO.findProductByNumber(number);
-				cart.removeItem(product);
-				note="Rimosso da carrello!";
-			}catch(Exception e){
-				note="Errore rimozione product dal cart";
-			}
-		}
-		else if ( operation != null && operation.equals("buy") ) {
-			try{
-				Purchase p = new Purchase();
-				Map<Product,Integer> items = cart.getItems();
-				
-				Customer customer;
-				if(request.getSession().getAttribute("identity")==null){
-					try{
-						customer=customerDAO.findCustomerByName("Anonymous");
-					}catch(Exception e){
-						customer=new Customer("Anonymous");
-					}						
-				}else{
-					customer=(Customer)request.getSession().getAttribute("identity");
-				}
-				p.setCustomer(customer);
-				
-				for (Product pr : items.keySet()){
-					PurchaseProduct pp = new PurchaseProduct();
-					int qnt = cart.getItems().get(pr);
-					pr.setQuantity(pr.getQuantity() - qnt);
-					pp.setProduct(pr);
-					pp.setPurchase(p);
-					pp.setQuantity(qnt);
-					
-					ppDAO.insertPurchaseProduct(pp);
-				}
-				
-				/*System.out.println("##DEBUG LETTURA PURCHASE");
-				Purchase pur = purchaseDAO.findPurchaseById(4);
-				System.out.println("SET:"+pur.getPurchaseProducts());
-				for(PurchaseProduct temp : pur.getPurchaseProducts()){
-					System.out.println(temp.getProduct());
-					System.out.println("NAME: "+temp.getProduct().getName());
-					System.out.println("QUANTITY: "+temp.getQuantity());
-				}*/
-				
-				cart.clear();
-				note="Ordine effettuato con successo, carrello vuoto!";
-			}catch(Exception e){
-				note="Errore nel completamento dell'ordine!";
-				System.out.println(e);
-			}
-		}
-		//Da aggiungere la possibilità di fare un ordine in sessione e di finalizzarla per creare un purchase.
 	%>
 
 
-	<h1>Customer Manager</h1>
-
-	<div>
-		<p>Add Customer:</p>
-		<form>
-			Name: <input type="text" name="name"/><br/>
-			<input type="hidden" name="operation" value="insertCustomer"/>
-			<input type="submit" name="submit" value="submit"/>
-		</form>
+	<h1>Administrator</h1>
+	
+	<div id="pagechoice">
+		<input type="radio" id="administrationButton" name="page" value="administrationPage" checked onclick="check()"/>
+		<label for="administrationButton">Administration Page</label>
+		<input type="radio" id="userButton" name="page" value="userPage"  onclick="check()"/>
+		<label for='userButton'>User Page</label>
 	</div>
 
-	<div>
-		<p>Add Producer:</p>
-		<form>
-			Name: <input type="text" name="name"/><br/>
-			<input type="hidden" name="operation" value="insertProducer"/>
-			<input type="submit" name="submit" value="submit"/>
-		</form>
-	</div>
-
-	<%
-		List producers = producerDAO.getAllProducers();
-		if ( producers.size() > 0 ) {
-	%>
-	<div>
-		<p>Add Product:</p>
-		<form>
-			Name: <input type="text" name="name"/><br/>
-			Product Number: <input type="text" name="number"/><br/>
-			Price: <input type="text" name="price"/><br/>
-			Quantity: <input type="text" name="quantity"/><br/>
-			Producers: <select name="producer">
-			<%
-				Iterator iterator = producers.iterator();
-				while ( iterator.hasNext() ) {
-					Producer producer = (Producer) iterator.next();
-			%>
-			<option value="<%= producer.getName() %>"><%= producer.getName()%></option>
-			<%
-				}// end while
-			%>
-
-			<input type="hidden" name="operation" value="insertProduct"/>
-			<input type="submit" name="submit" value="submit"/>
-		</form>
-	</div>
-	<%
-	}// end if
-	else {
-	%>
-	<div>
-		<p>At least one Producer must be present to add a new Product.</p>
-	</div>
-	<%
-		} // end else
-	%>
-	<div>
-		<p>Products currently in the database:</p>
-		<table>
-			<tr><th>ProductNumber</th><th>Name</th><th>Publisher</th><th>Price</th><th>Available</th><th>Operation</th></tr>
-			<%= printTableRows( productDAO.getAllProducts(), request.getContextPath() ) %>
-		</table>
-	</div>
-
-	<div>
-		<a href="<%= request.getContextPath() %>">Ricarica lo stato iniziale di questa pagina</a>
+	<div id="administrationHTML">
+		<div>
+			<p>Add Customer:</p>
+			<form>
+				Name: <input type="text" name="name"/><br/>
+				<input type="hidden" name="operation" value="insertCustomer"/>
+				<input type="submit" name="submit" value="submit"/>
+			</form>
+		</div>
+	
+		<div>
+			<p>Add Producer:</p>
+			<form>
+				Name: <input type="text" name="name"/><br/>
+				<input type="hidden" name="operation" value="insertProducer"/>
+				<input type="submit" name="submit" value="submit"/>
+			</form>
+		</div>
+	
+		<%
+			List producers = producerDAO.getAllProducers();
+			if ( producers.size() > 0 ) {
+		%>
+		<div>
+			<p>Add Product:</p>
+			<form>
+				Name: <input type="text" name="name"/><br/>
+				Product Number: <input type="text" name="number"/><br/>
+				Price: <input type="text" name="price"/><br/>
+				Quantity: <input type="text" name="quantity"/><br/>
+				Producers: <select name="producer">
+				<%
+					Iterator iterator = producers.iterator();
+					while ( iterator.hasNext() ) {
+						Producer producer = (Producer) iterator.next();
+				%>
+				<option value="<%= producer.getName() %>"><%= producer.getName()%></option>
+				<%
+					}// end while
+				%>
+	
+				<input type="hidden" name="operation" value="insertProduct"/>
+				<input type="submit" name="submit" value="submit"/>
+			</form>
+		</div>
+		<%
+		}// end if
+		else {
+		%>
+		<div>
+			<p>At least one Producer must be present to add a new Product.</p>
+		</div>
+		<%
+			} // end else
+		%>
+		
+		<div id="adminNotes">
+			<p><%=adminNote %></p>
+		</div>
 	</div>
 	
-	<form>
-		<input type="submit" name="operation" value="buy"/>
-	</form>
-	
-	<div>
-		<h3>CART</h3>
-		<ul><%=printCart() %></ul>
-	</div>
-
-	<div id="notes">
-		<p><%=note %></p>
-	</div>
 	</body>
 
 </html>

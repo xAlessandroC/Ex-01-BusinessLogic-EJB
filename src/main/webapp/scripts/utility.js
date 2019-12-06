@@ -5,12 +5,19 @@ function appendElement(text, div){
 	document.getElementById(div).appendChild(node);
 }
 
-function modifyCart(op){
-	var f = document.getElementById("cartForm");
-	var hiddenInput = document.getElementById("operation");
-	if(op==="insert")
-		hiddenInput.value="insertCart";
-	if(op==="remove")
-		hiddenInput.value="removeCart";
-	f.submit();
+function check(){
+	userRadio = document.getElementById("userButton");
+	administrationRadio = document.getElementById("administrationButton");
+	
+	if(userRadio.checked){
+		//document.getElementById("userHTML").hidden=false;
+		//document.getElementById("administrationHTML").hidden=true;
+		window.location.replace("./user.jsp");
+	}
+	if(administrationRadio.checked){
+		//document.getElementById("userHTML").hidden=true;
+		//document.getElementById("administrationHTML").hidden=false;
+		window.location.replace("./index.jsp");
+	}
+		
 }
